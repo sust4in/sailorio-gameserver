@@ -17,7 +17,7 @@ admin.initializeApp({
 module.exports = {
     admin: admin,
     env: process.env.NODE_ENV,
-    port: process.env.PORT,
+    port: process.env.GAMEPORT,
     jwtSecret: process.env.JWT_SECRET,
     jwtExpirationInterval: process.env.JWT_EXPIRATION_MINUTES,
     servername: process.env.SERVER_NAME,
