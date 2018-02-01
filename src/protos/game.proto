@@ -1,0 +1,9 @@
+enum Engine {
+    Start = 1;
+    Stop = 2;
+}
+
+message Test {
+    required float num  = 1;
+    required string payload = 2;
+}
