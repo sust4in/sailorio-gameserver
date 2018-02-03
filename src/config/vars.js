@@ -6,16 +6,7 @@ require('dotenv-safe').load({
     sample: path.join(__dirname, '../../.env.example'),
 });
 
-
-const serviceAccount = JSON.parse(process.env.FIREBASE_KEY);
-
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://sailor-game.firebaseio.com"
-});
-
 module.exports = {
-    admin: admin,
     env: process.env.NODE_ENV,
     port: process.env.PORT,
     jwtSecret: process.env.JWT_SECRET,
