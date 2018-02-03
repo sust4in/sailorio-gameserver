@@ -12,7 +12,7 @@ mongoose.connect();
 const expressserver = app.listen(port, () => console.info(`Game server started on port ${port} (${env})`));
 const ioServer  = io(expressserver);
 const server = new ServerCore(ioServer);
-
+server.start();
 /**
  * Exports express
  * @public

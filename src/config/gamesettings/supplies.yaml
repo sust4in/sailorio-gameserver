@@ -1,0 +1,11 @@
+--- Supplies
+- name: "Crate1"
+  supplyId  : "crate-1#"
+  assetName : "crate-1"
+  income  : 50
+  maxSupplyCount: 15
+- name: "Crate2"
+  supplyId  : "crate-2#"
+  assetName : "crate-2"
+  income  : 100
+  maxSupplyCount: 20
