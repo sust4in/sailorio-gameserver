@@ -3,6 +3,7 @@ const socketioJwt = require("socketio-jwt");
 const { JWT_SECRET } = require('../config/vars');
 const YAML = require('yamljs');
 const supplyController = require("./controllers/supply.controller");
+const playerController = require("./controllers/player.controller");
 
 exports = module.exports = ServerCore;
 
@@ -13,6 +14,7 @@ function ServerCore(socket) {
     this.updatePassTime = null;
     this.worldConfig = YAML.load(__base + "config/gamesettings/world.yaml");
     this.supplyController = new supplyController();
+    this.playerController = new playerController();
     this.supplyConfig = YAML.load(__base + "config/gamesettings/supplies.yaml");
     this.supplyRespawnSec = 5;
     this.lastSupplyRespawnTime = null;
@@ -37,6 +39,11 @@ ServerCore.prototype.broadcastState = function () {
     this.io.emit('worldUpdate', state);
 };
 
+ServerCore.prototype.removePlayer = function (socket, id) {
+    //this.io.emit('removePlayer', id);
+    this.playerController.remove(socket);
+};
+
 ServerCore.prototype.start = function () {
     this.startTime = new Date().getTime();
     var self = this;
@@ -55,7 +62,12 @@ ServerCore.prototype.start = function () {
 
         socket.on('playerMove', function(data){
             var inputtime = new Date().getTime();
-            self.addPlayerInput(socket.client.id, 'playerMove', data, inputtime);
+            //self.addPlayerInput(socket.client.id, 'playerMove', data, inputtime);
+        });
+
+        socket.on('disconnect', function(){
+            var playerObjectId = {id: socket.client.id};
+            self.removePlayer(socket, playerObjectId);
         });
 
 
