@@ -11,9 +11,9 @@ function ServerCore(socket) {
     this.io = socket;
     this.lastUpdateTime = 0;
     this.updatePassTime = null;
-    this.worldConfig = YAML.load("../src/config/gamesettings/world.yaml");
+    this.worldConfig = YAML.load(__base + "config/gamesettings/world.yaml");
     this.supplyController = new supplyController();
-    this.supplyConfig = YAML.load("../src/config/gamesettings/supplies.yaml");
+    this.supplyConfig = YAML.load(__base + "config/gamesettings/supplies.yaml");
     this.supplyRespawnSec = 5;
     this.lastSupplyRespawnTime = null;
     this.worldConfig.worldLeftX = this.worldConfig.offSetX - (this.worldConfig.width / 2);

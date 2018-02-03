@@ -36,7 +36,7 @@ SupplyController.prototype.GetAllSupplies = function () {
             pos_y: supplyCrateDict.pos_y,
             supplyId: supplyCrateDict.supplyId,
             supplyIncome: supplyCrateDict.supplyIncome,
-            supplyName: supplyCrateDict.supplyName,
+            assetName: supplyCrateDict.assetName,
         });
         //TODO: check collision
     });

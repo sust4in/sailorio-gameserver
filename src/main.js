@@ -1,4 +1,5 @@
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
+global.__base = __dirname + '/';
 
 const { port, env } = require('./config/vars');
 const app = require('./config/express');
