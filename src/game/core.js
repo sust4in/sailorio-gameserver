@@ -48,16 +48,14 @@ ServerCore.prototype.start = function () {
             console.log("user wants to know world info > "+socket.client.id);
             socket.emit('getWorldInfo', self.worldConfig);
         });
+
         socket.on('newPlayer', function(data){
-            //TODO: AUTH CHECKS
 
         });
 
-        socket.on('movePlayer', function(data){
-
+        socket.on('playerMove', function(data){
             var inputtime = new Date().getTime();
-            //TODO: AUTH CHECKS
-            //self.addPlayerInput(socket.client.id, 'move', data, inputtime);
+            self.addPlayerInput(socket.client.id, 'playerMove', data, inputtime);
         });
 
 
