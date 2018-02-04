@@ -1,7 +1,7 @@
 --- Ships
 Raft1:
     id  : "raft-1#"
-    assetName : "Raft"
+    assetName : "Raft-1"
     slopeSpeed : 15
     absSpeed : 10
     maxSuppliesCount: 250
