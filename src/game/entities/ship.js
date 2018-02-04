@@ -1,5 +1,6 @@
 const Entity = require("./entity");
 const uuidv4 = require('uuid/v4');
+const config = require('../../config/game');
 
 exports = module.exports = Ship;
 
@@ -21,6 +22,10 @@ function Ship (player, shipConfig) {
     this.currentHealth = shipConfig.maxHealth;
     this.rotationSpeed = shipConfig.rotationSpeed;
     this.movementSpeed = shipConfig.movementSpeed;
+    this.absSpeed = shipConfig.absSpeed;
+    this.pos_x = 0;
+    this.pos_y = 0;
+    this.pos_z = 0;
     this.inputs = [];
 }
 
@@ -31,6 +36,12 @@ Ship.prototype.validateInput = function(dt_time) {
         return false;
     }
     return true;
+};
+
+Ship.prototype.moveForward = function () {
+    //if it has an index about given input. it return > -1 index number.
+    //TODO:0.02 must be on game.yaml
+    this.pos_z += (this.absSpeed * config.game.absolute_delta_time * this.movementSpeed);
 };
 
 // Ship.prototype.moveTo = function (data) {

@@ -1,5 +1,6 @@
 const entityController = require("./entity.controller");
 const ship = require("../entities/ship");
+const config = require('../../config/game');
 
 exports = module.exports = ShipController;
 
@@ -13,30 +14,30 @@ ShipController.prototype = {
         let newShip = new ship(player, shipConfig);
         this.entities.push(newShip);
     },
-    remove: function (id) {
-        for (var i = 0; i < this.entities.length; i ++) {
-            if (this.entities[i].id === id) {
-                this.entities.splice(i, 1)[0];
-                return;
-            }
-        }
+    remove: function (socket) {
+        this.entities = this.entities.filter(function(item) {
+            return item.captainUserId !== socket.client.id
+        });
     }
 };
 
+
 ShipController.prototype.addInput = function (id, inputName, input, time) {
-    this.entities.some(function (player) {
-        if (player.id === id) {
+    this.entities.some(function (ship) {
+        if (ship.id === id) {
             input["time"] = time;
-            player.inputs.push(input);
+            ship.inputs.push(input);
             return true;
         }
     });
 };
+
 ShipController.prototype.GetAllShips = function () {
     var self = this;
     let shipList = [];
     self.entities.forEach(function (entity) {
         //TODO: Collision
+        entity.moveForward();
         shipList.push({
             pos_x: entity.pos_x,
             pos_z: entity.pos_z,
@@ -53,6 +54,9 @@ ShipController.prototype.GetAllShips = function () {
             slopeSpeed: entity.slopeSpeed,
             rotationSpeed: entity.rotationSpeed,
             movementSpeed: entity.movementSpeed,
+            lastMoveUpdateTs: (new Date().getTime() / 1000.000).toFixed(3),
+            inputs: entity.inputs,
+            lastProcessedInputSeqId: entity.lastProcessedInputSeqId
         });
     });
     return shipList;

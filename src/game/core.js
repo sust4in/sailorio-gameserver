@@ -24,8 +24,6 @@ function ServerCore(socket) {
     this.playerController = new PlayerController();
     this.shipController = new ShipController();
     this.entityController = new EntityController();
-    this.supplyRespawnSec = 5;
-    this.lastSupplyRespawnTime = null;
     this.worldConfig.worldLeftX = this.worldConfig.offSetX - (this.worldConfig.width / 2);
     this.worldConfig.worldUpZ = (this.worldConfig.length / 2) - this.worldConfig.offSetZ;
     this.worldConfig.worldRightX = (this.worldConfig.width / 2) - this.worldConfig.offSetX;
@@ -57,6 +55,10 @@ ServerCore.prototype.removePlayer = function (socket, id) {
     //this.io.emit('removePlayer', id);
     this.playerController.remove(socket);
 };
+ServerCore.prototype.removeShip = function (socket) {
+    //this.io.emit('removePlayer', id);
+    this.shipController.remove(socket);
+};
 ServerCore.prototype.addPlayer = function (socket) {
     this.playerController.add(socket);
 };
@@ -72,8 +74,8 @@ ServerCore.prototype.addShip = function (selectedShip, socket) {
                 return true;
             }
         });
-        console.log("New ship created for: " + socket.client.id)
-        this.shipController.add(currentPlayer, selectedShip)
+        console.log("New ship created for: " + socket.client.id);
+        this.shipController.add(currentPlayer, selectedShip);
     }
 };
 
@@ -118,7 +120,8 @@ ServerCore.prototype.start = function () {
         socket.on('disconnect', function(){
             let playerObjectId = {id: socket.client.id};
             self.removePlayer(socket, playerObjectId);
-            console.log('user deleted');
+            self.removeShip(socket);
+            console.log('user+ship deleted');
 
         });
 
