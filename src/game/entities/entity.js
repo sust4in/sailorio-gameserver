@@ -4,6 +4,11 @@ function Entity (id) {
     this.pos_x = 0.00;
     this.pos_y = 0.00;
     this.pos_z = 0.00;
+    this.maxHealth = 0;
+    this.currentHealth = 0;
+    this.movementSpeed = 0;
+    this.rotationSpeed = 0;
+    this.viewAngle = 0;
     this.lastProcessedInputSeqId = null;
     this.id = id;
 }

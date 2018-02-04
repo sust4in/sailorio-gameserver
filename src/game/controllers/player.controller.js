@@ -9,7 +9,8 @@ function PlayerController () {
 
 PlayerController.prototype = Object.create(entityController.prototype);
 
-PlayerController.prototype.add = function (socket, classObj) {
+PlayerController.prototype.add = function (socket) {
+    var self = this;
     var newPlayer, playerFound = false;
 
     this.entities.some(function (player) {
@@ -21,7 +22,7 @@ PlayerController.prototype.add = function (socket, classObj) {
     });
 
     if (!playerFound) {
-        newPlayer = new player(socket, classObj);
+        newPlayer = new player(socket);
         this.entities.push(newPlayer);
     }
     return newPlayer;

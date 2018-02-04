@@ -3,9 +3,10 @@ const entity = require("./entity");
 exports = module.exports = Player;
 
 function Player (socket) {
-    entity.call(this, socket.client.id);
+    entity.call(this, socket);
     this.socket = socket;
-    this.playerUsername = "";
+    this.Username = "Default";
+    this.Id = socket.client.id;
     this.inputs = [];
 }
 
@@ -16,6 +17,10 @@ Player.prototype.validateInput = function(dt_time) {
         return false;
     }
     return true;
+};
+
+Player.prototype.add = function() {
+
 };
 
 Player.prototype.moveTo = function (data) {

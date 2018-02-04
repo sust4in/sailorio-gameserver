@@ -1,7 +1,7 @@
 --- WORLD SETTINGS
 height: 1
-width : 100
-length : 100
+width : 250
+length : 250
 offSetX : 0
 offSetZ : 0
 offSetY : 1
