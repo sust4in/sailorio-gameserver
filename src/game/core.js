@@ -44,7 +44,7 @@ ServerCore.prototype.broadcastState = function () {
     let state = {
         currTime: serverTime,
         supplyCrates: this.supplyController.GetAllSupplies(),
-        ships: this.shipController.GetAllShips(),
+        shipModels: this.shipController.GetAllShips(),
         svTickRate: this.options.game.interval };
 
     let updateTime = new Date().getTime() / 1000.00000;
