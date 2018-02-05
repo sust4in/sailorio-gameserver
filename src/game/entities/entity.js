@@ -1,6 +1,7 @@
 exports = module.exports = Entity;
 
 function Entity (id) {
+    this.colliders = [];
     this.pos_x = 0.00;
     this.pos_y = 0.00;
     this.pos_z = 0.00;

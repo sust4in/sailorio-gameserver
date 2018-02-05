@@ -8,5 +8,5 @@ Raft1:
     maxSailorsCount: 1
     marketPrice: 1
     rotationSpeed: 15
-    movementSpeed: 5
+    movementSpeed: 15
     maxHealth: 250

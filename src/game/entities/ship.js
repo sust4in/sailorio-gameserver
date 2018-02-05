@@ -1,7 +1,7 @@
 const Entity = require("./entity");
 const uuidv4 = require('uuid/v4');
 const config = require('../../config/game');
-
+const THREE = require('three');
 exports = module.exports = Ship;
 
 function Ship (player, shipConfig) {
@@ -41,7 +41,7 @@ Ship.prototype.validateInput = function(dt_time) {
 Ship.prototype.moveForward = function () {
     //if it has an index about given input. it return > -1 index number.
     //TODO:0.02 must be on game.yaml
-    this.pos_z += (this.absSpeed * config.game.absolute_delta_time * this.movementSpeed);
+    this.pos_z += (this.absSpeed * config.game.absolute_delta_time * this.movementSpeed / config.game.interval);
 };
 
 // Ship.prototype.moveTo = function (data) {

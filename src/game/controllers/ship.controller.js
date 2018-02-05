@@ -18,6 +18,12 @@ ShipController.prototype = {
         this.entities = this.entities.filter(function(item) {
             return item.captainUserId !== socket.client.id
         });
+    },
+    get: function (socket) {
+         let ship = this.entities.filter(function(item) {
+            return item.captainUserId === socket.client.id
+        })[0];
+        return ship.id;
     }
 };
 
@@ -42,6 +48,7 @@ ShipController.prototype.GetAllShips = function () {
             pos_x: entity.pos_x,
             pos_z: entity.pos_z,
             pos_y: entity.pos_y,
+            viewAngle: entity.viewAngle,
             Id: entity.id,
             assetName: entity.assetName,
             captainUserId: entity.captainUserId,

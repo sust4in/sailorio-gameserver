@@ -59,6 +59,9 @@ ServerCore.prototype.removeShip = function (socket) {
     //this.io.emit('removePlayer', id);
     this.shipController.remove(socket);
 };
+ServerCore.prototype.getPlayerShipId = function (socket) {
+    return this.shipController.get(socket);
+};
 ServerCore.prototype.addPlayer = function (socket) {
     this.playerController.add(socket);
 };
@@ -77,6 +80,9 @@ ServerCore.prototype.addShip = function (selectedShip, socket) {
         console.log("New ship created for: " + socket.client.id);
         this.shipController.add(currentPlayer, selectedShip);
     }
+};
+ServerCore.prototype.broadcastUserStatus = function (dcStatusModel) {
+    this.io.emit('playerDisconnected', dcStatusModel);
 };
 
 ServerCore.prototype.start = function () {
@@ -118,11 +124,11 @@ ServerCore.prototype.start = function () {
         });
 
         socket.on('disconnect', function(){
-            let playerObjectId = {id: socket.client.id};
-            self.removePlayer(socket, playerObjectId);
+            let dcStatusModel = {userId: socket.client.id, shipId: self.getPlayerShipId(socket)};
+            self.removePlayer(socket);
             self.removeShip(socket);
+            self.broadcastUserStatus(dcStatusModel);
             console.log('user+ship deleted');
-
         });
 
 
