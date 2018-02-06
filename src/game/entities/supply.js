@@ -12,6 +12,7 @@ function Supply (supplyData, worldConfig) {
     this.supplyName = supplyData.name;
     this.supplyIncome = supplyData.income;
     this.supplyId =  supplyData.supplyId + uuidv4();
+    this.isDeath = false;
     this.assetName = supplyData.assetName;
     this.SetRandomPosition(worldConfig);
 }

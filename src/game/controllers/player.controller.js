@@ -10,8 +10,8 @@ function PlayerController () {
 PlayerController.prototype = Object.create(entityController.prototype);
 
 PlayerController.prototype.add = function (socket) {
-    var self = this;
-    var newPlayer, playerFound = false;
+    let self = this;
+    let newPlayer, playerFound = false;
 
     this.entities.some(function (player) {
         if (player.id === socket.client.id) {

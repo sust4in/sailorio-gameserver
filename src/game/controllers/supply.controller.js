@@ -10,33 +10,34 @@ function SupplyController () {
 }
 
 SupplyController.prototype.spawnOneSupply = function (worldConfig, supplyConfig) {
-    var self = this;
+    let self = this;
     let nowDt = new Date().getTime();
     if (nowDt - self.lastSupplySpawnTime > 1000.000 * worldConfig.supplyRespawnSec)
     {
-        let i = getRandomInt(0,supplyConfig.length - 1 );
+        let i = getRandomInt(0, supplyConfig.length - 1 );
         let supplyItem = supplyConfig[i];
-        if (self.supplyItems.length < supplyItem.maxSupplyCount){
+        if (self.supplyItems.length < supplyItem.maxSupplyCount)  {
             let newSupplyCrate = new Supply(supplyItem, worldConfig);
             self.supplyItems.push(newSupplyCrate);
             self.lastSupplySpawnTime = new Date().getTime();
-            console.log("Supply Spawned => "+ newSupplyCrate.supplyName+ "  x : " + newSupplyCrate.pos_x + " z: " + newSupplyCrate.pos_z);
+            console.log("Supply Spawned => "+ newSupplyCrate.supplyName+ "  x: " + newSupplyCrate.pos_x + " z: " + newSupplyCrate.pos_z);
             return null;
         }
-
     }
 };
+
 SupplyController.prototype.GetAllSupplies = function () {
-    var self = this;
+    let self = this;
     let supplyList = [];
-    self.supplyItems.forEach(function (supplyCrateDict) {
+    self.supplyItems.forEach(function (supplyCrate) {
         supplyList.push({
-            pos_x: supplyCrateDict.pos_x,
-            pos_z: supplyCrateDict.pos_z,
-            pos_y: supplyCrateDict.pos_y,
-            supplyId: supplyCrateDict.supplyId,
-            supplyIncome: supplyCrateDict.supplyIncome,
-            assetName: supplyCrateDict.assetName,
+            pos_x: supplyCrate.pos_x,
+            pos_z: supplyCrate.pos_z,
+            pos_y: supplyCrate.pos_y,
+            supplyId: supplyCrate.supplyId,
+            supplyIncome: supplyCrate.supplyIncome,
+            assetName: supplyCrate.assetName,
+            isDeath: supplyCrate.isDeath
         });
         //TODO: check collision
     });

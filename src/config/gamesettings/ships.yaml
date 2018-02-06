@@ -3,7 +3,7 @@ Raft1:
     id  : "raft-1#"
     assetName : "Raft-1"
     slopeSpeed : 15
-    absSpeed : 10
+    absSpeed : 30
     maxSuppliesCount: 250
     maxSailorsCount: 1
     marketPrice: 1

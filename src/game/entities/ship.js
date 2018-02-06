@@ -12,6 +12,7 @@ function Ship (player, shipConfig) {
     Entity.call(this, uniqueId);
     this.assetName = shipConfig.assetName;
     this.captainUserId = player.Id;
+    this.captain = player;
     this.slopeSpeed = shipConfig.slopeSpeed;
     this.maxSuppliesCount = shipConfig.maxSuppliesCount;
     this.currentSuppliesCount = 0;
@@ -26,7 +27,9 @@ function Ship (player, shipConfig) {
     this.pos_x = 0;
     this.pos_y = 0;
     this.pos_z = 0;
+    this.sailors = [];
     this.inputs = [];
+    this.sailors.push(player);
 }
 
 Ship.prototype = Object.create(Entity.prototype);

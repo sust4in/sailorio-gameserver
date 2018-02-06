@@ -1,4 +1,5 @@
 const config = require('../config/game');
+const THREE = require('three');
 
 const socketioJwt = require("socketio-jwt");
 const { JWT_SECRET } = require('../config/vars');
@@ -45,6 +46,10 @@ ServerCore.prototype.broadcastState = function () {
         shipModels: this.shipController.GetAllShips(),
         svTickRate: this.options.game.interval };
 
+    this.supplyController.supplyItems =this.supplyController.supplyItems.filter(function(item) {
+        return item.isDeath === false
+    });
+
     let updateTime = new Date().getTime() / 1000.00000;
     state.updateTime = updateTime.toFixed(3);
     state.updatePassTime = this.updatePassTime;
@@ -81,8 +86,33 @@ ServerCore.prototype.addShip = function (selectedShip, socket) {
         this.shipController.add(currentPlayer, selectedShip);
     }
 };
+
 ServerCore.prototype.broadcastUserStatus = function (dcStatusModel) {
     this.io.emit('playerDisconnected', dcStatusModel);
+};
+ServerCore.prototype.feedShip = function (feedModel) {
+    let supplyIndex = this.supplyController.supplyItems.findIndex(x => x.supplyId === feedModel.supplyId);
+    let shipIndex = this.shipController.entities.findIndex(x => x.id ===  feedModel.shipId);
+
+    let supplyVc = new THREE.Vector2(
+        this.supplyController.supplyItems[supplyIndex].pos_x,
+        this.supplyController.supplyItems[supplyIndex].pos_z );
+
+    let shipVc = new THREE.Vector2(
+        this.shipController.entities[shipIndex].pos_x,
+        this.shipController.entities[shipIndex].pos_z );
+
+    let distance = supplyVc.distanceTo( shipVc );
+    if (distance < 10) {
+        console.log("Ship eating the supply ! > shipid: "+ this.shipController.entities[shipIndex].id);
+        // ship.sailors.forEach(function (sailor) {
+        //     //TODO: ADD INCOME TO SAILORS
+        // })
+        this.supplyController.supplyItems[supplyIndex].isDeath = true;
+    }
+    else {
+        console.log("Possible supply feed hack detected ! ")
+    }
 };
 
 ServerCore.prototype.start = function () {
@@ -116,13 +146,16 @@ ServerCore.prototype.start = function () {
             //data.playerId
             self.addPlayer(socket);
             console.log('new user created id: ' + socket.client.id);
-
         });
         socket.on('playerMove', function(data){
             let inputtime = new Date().getTime();
             //self.addPlayerInput(socket.client.id, 'playerMove', data, inputtime);
         });
-
+        socket.on('feedShip', function(data){
+            let inputtime = new Date().getTime();
+            self.feedShip(data)
+            //self.addPlayerInput(socket.client.id, 'playerMove', data, inputtime);
+        });
         socket.on('disconnect', function(){
             let dcStatusModel = {userId: socket.client.id, shipId: self.getPlayerShipId(socket)};
             self.removePlayer(socket);

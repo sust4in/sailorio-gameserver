@@ -1,6 +1,5 @@
 const entityController = require("./entity.controller");
-const ship = require("../entities/ship");
-const config = require('../../config/game');
+const Ship = require("../entities/ship");
 
 exports = module.exports = ShipController;
 
@@ -11,7 +10,7 @@ function ShipController () {
 ShipController.prototype = Object.create(entityController.prototype);
 ShipController.prototype = {
     add: function (player, shipConfig) {
-        let newShip = new ship(player, shipConfig);
+        let newShip = new Ship(player, shipConfig);
         this.entities.push(newShip);
     },
     remove: function (socket) {
@@ -39,7 +38,7 @@ ShipController.prototype.addInput = function (id, inputName, input, time) {
 };
 
 ShipController.prototype.GetAllShips = function () {
-    var self = this;
+    let self = this;
     let shipList = [];
     self.entities.forEach(function (entity) {
         //TODO: Collision
