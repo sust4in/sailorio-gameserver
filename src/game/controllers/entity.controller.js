@@ -1,4 +1,4 @@
-var entity = require("../entities/entity");
+const entity = require("../entities/entity");
 
 exports = module.exports = EntityController;
 
