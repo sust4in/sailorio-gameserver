@@ -1,12 +1,12 @@
 var Supply = require("../entities/supply");
 var entityController = require("./entity.controller");
-
+var Sugar = require('sugar');
 exports = module.exports = SupplyController;
 
 function SupplyController () {
     entityController.call(this);
     this.lastSupplySpawnTime = null;
-    this.supplyItems = [];
+    this.supplyItems = new Sugar.Array([]);
 }
 
 SupplyController.prototype.spawnOneSupply = function (worldConfig, supplyConfig) {
@@ -16,7 +16,7 @@ SupplyController.prototype.spawnOneSupply = function (worldConfig, supplyConfig)
     {
         let i = getRandomInt(0, supplyConfig.length - 1 );
         let supplyItem = supplyConfig[i];
-        if (self.supplyItems.length < supplyItem.maxSupplyCount)  {
+        if (self.supplyItems.count() < supplyItem.maxSupplyCount)  {
             let newSupplyCrate = new Supply(supplyItem, worldConfig);
             self.supplyItems.push(newSupplyCrate);
             self.lastSupplySpawnTime = new Date().getTime();
@@ -24,6 +24,17 @@ SupplyController.prototype.spawnOneSupply = function (worldConfig, supplyConfig)
             return null;
         }
     }
+};
+
+SupplyController.prototype.spawnOneSupplyWithInterval = function (worldConfig, supplyConfig) {
+    let self = this;
+        let i = getRandomInt(0, supplyConfig.length - 1 );
+        let supplyItem = supplyConfig[i];
+        if (self.supplyItems.count() < supplyItem.maxSupplyCount)  {
+            let newSupplyCrate = new Supply(supplyItem, worldConfig);
+            self.supplyItems.push(newSupplyCrate);
+            return null;
+        }
 };
 
 SupplyController.prototype.GetAllSupplies = function () {
@@ -39,7 +50,6 @@ SupplyController.prototype.GetAllSupplies = function () {
             assetName: supplyCrate.assetName,
             isDeath: supplyCrate.isDeath
         });
-        //TODO: check collision
     });
     return supplyList;
 };

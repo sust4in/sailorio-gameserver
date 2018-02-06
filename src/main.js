@@ -6,6 +6,7 @@ const app = require('./config/express');
 const mongoose = require('./config/mongoose');
 const ServerCore = require('./game/core');
 const io = require('socket.io');
+
 // open mongoose connection
 mongoose.connect();
 

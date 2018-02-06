@@ -1,5 +1,6 @@
 const config = require('../config/game');
 const THREE = require('three');
+var Sugar = require('sugar');
 
 const socketioJwt = require("socketio-jwt");
 const { JWT_SECRET } = require('../config/vars');
@@ -33,9 +34,6 @@ function ServerCore(socket) {
 
 ServerCore.prototype.broadcastState = function () {
     let serverTime = new Date().getTime() - this.startTime;
-    //spawn supply
-    this.supplyController.spawnOneSupply(this.worldConfig, this.supplyConfig);
-
     this.updatePassTime = serverTime - this.lastUpdateTime;
     this.lastUpdateTime = serverTime;
     let i = 0;
@@ -46,9 +44,7 @@ ServerCore.prototype.broadcastState = function () {
         shipModels: this.shipController.GetAllShips(),
         svTickRate: this.options.game.interval };
 
-    this.supplyController.supplyItems =this.supplyController.supplyItems.filter(function(item) {
-        return item.isDeath === false
-    });
+    this.supplyController.supplyItems.remove(function(el) { return el.isDeath === true });
 
     let updateTime = new Date().getTime() / 1000.00000;
     state.updateTime = updateTime.toFixed(3);
@@ -93,26 +89,26 @@ ServerCore.prototype.broadcastUserStatus = function (dcStatusModel) {
 ServerCore.prototype.feedShip = function (feedModel) {
     let supplyIndex = this.supplyController.supplyItems.findIndex(x => x.supplyId === feedModel.supplyId);
     let shipIndex = this.shipController.entities.findIndex(x => x.id ===  feedModel.shipId);
+    if (supplyIndex > -1 && shipIndex > -1 )
+    {
+        let supplyVc = new THREE.Vector2(
+            this.supplyController.supplyItems.at(supplyIndex).pos_x,
+            this.supplyController.supplyItems.at(supplyIndex).pos_z );
 
-    let supplyVc = new THREE.Vector2(
-        this.supplyController.supplyItems[supplyIndex].pos_x,
-        this.supplyController.supplyItems[supplyIndex].pos_z );
+        let shipVc = new THREE.Vector2(
+            this.shipController.entities[shipIndex].pos_x,
+            this.shipController.entities[shipIndex].pos_z );
 
-    let shipVc = new THREE.Vector2(
-        this.shipController.entities[shipIndex].pos_x,
-        this.shipController.entities[shipIndex].pos_z );
-
-    let distance = supplyVc.distanceTo( shipVc );
-    if (distance < 10) {
-        console.log("Ship eating the supply ! > shipid: "+ this.shipController.entities[shipIndex].id);
-        // ship.sailors.forEach(function (sailor) {
-        //     //TODO: ADD INCOME TO SAILORS
-        // })
-        this.supplyController.supplyItems[supplyIndex].isDeath = true;
+        let distance = supplyVc.distanceTo( shipVc );
+        if (distance < 10) {
+            console.log("Ship eating the supply ! > shipid: "+ this.shipController.entities[shipIndex].id);
+            // ship.sailors.forEach(function (sailor) {
+            //     //TODO: ADD INCOME TO SAILORS
+            // })
+            this.supplyController.supplyItems.at(supplyIndex).isDeath = true;
+        }
     }
-    else {
-        console.log("Possible supply feed hack detected ! ")
-    }
+
 };
 
 ServerCore.prototype.start = function () {
@@ -169,5 +165,6 @@ ServerCore.prototype.start = function () {
 
     //update per second
     self.stateIntervalId = setInterval(function () { self.broadcastState(); }, 1000 / this.options.game.interval);
+    self.supplyIntervalId = setInterval(function () { self.supplyController.spawnOneSupplyWithInterval(self.worldConfig, self.supplyConfig);}, 1000 / self.worldConfig.supplyRespawnSec);
 
 };

@@ -58,6 +58,7 @@
     "protocol-buffers-encodings": "^1.1.0",
     "socket.io": "^2.0.4",
     "socketio-jwt": "^4.5.0",
+    "sugar": "^2.0.4",
     "three": "^0.89.0",
     "uuid": "^3.2.1",
     "yamljs": "^0.3.0"
