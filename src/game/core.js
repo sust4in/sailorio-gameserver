@@ -1,6 +1,5 @@
 const config = require('../config/game');
 const THREE = require('three');
-var Sugar = require('sugar');
 
 const socketioJwt = require("socketio-jwt");
 const { JWT_SECRET } = require('../config/vars');
@@ -44,7 +43,7 @@ ServerCore.prototype.broadcastState = function () {
         shipModels: this.shipController.GetAllShips(),
         svTickRate: this.options.game.interval };
 
-    this.supplyController.supplyItems.remove(function(el) { return el.isDeath === true });
+    this.supplyController.supplyItems = this.supplyController.supplyItems.filter(function(el) { return el.isDeath === false });
 
     let updateTime = new Date().getTime() / 1000.00000;
     state.updateTime = updateTime.toFixed(3);
@@ -92,8 +91,8 @@ ServerCore.prototype.feedShip = function (feedModel) {
     if (supplyIndex > -1 && shipIndex > -1 )
     {
         let supplyVc = new THREE.Vector2(
-            this.supplyController.supplyItems.at(supplyIndex).pos_x,
-            this.supplyController.supplyItems.at(supplyIndex).pos_z );
+            this.supplyController.supplyItems[supplyIndex].pos_x,
+            this.supplyController.supplyItems[supplyIndex].pos_z );
 
         let shipVc = new THREE.Vector2(
             this.shipController.entities[shipIndex].pos_x,
@@ -105,7 +104,7 @@ ServerCore.prototype.feedShip = function (feedModel) {
             // ship.sailors.forEach(function (sailor) {
             //     //TODO: ADD INCOME TO SAILORS
             // })
-            this.supplyController.supplyItems.at(supplyIndex).isDeath = true;
+            this.supplyController.supplyItems[supplyIndex].isDeath = true;
         }
     }
 

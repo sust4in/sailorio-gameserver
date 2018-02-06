@@ -17,8 +17,6 @@ function Supply (supplyData, worldConfig) {
     this.SetRandomPosition(worldConfig);
 }
 
-
-
 Supply.prototype.SetRandomPosition = function(worldConfig) {
     let self = this;
     self.pos_x = chance.floating({min: worldConfig.worldLeftX, max:  worldConfig.worldRightX});

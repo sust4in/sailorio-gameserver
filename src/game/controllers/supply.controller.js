@@ -1,12 +1,11 @@
-var Supply = require("../entities/supply");
-var entityController = require("./entity.controller");
-var Sugar = require('sugar');
+const Supply = require("../entities/supply");
+const entityController = require("./entity.controller");
 exports = module.exports = SupplyController;
 
 function SupplyController () {
     entityController.call(this);
     this.lastSupplySpawnTime = null;
-    this.supplyItems = new Sugar.Array([]);
+    this.supplyItems = [];
 }
 
 SupplyController.prototype.spawnOneSupply = function (worldConfig, supplyConfig) {
@@ -16,7 +15,7 @@ SupplyController.prototype.spawnOneSupply = function (worldConfig, supplyConfig)
     {
         let i = getRandomInt(0, supplyConfig.length - 1 );
         let supplyItem = supplyConfig[i];
-        if (self.supplyItems.count() < supplyItem.maxSupplyCount)  {
+        if (self.supplyItems.length < supplyItem.maxSupplyCount)  {
             let newSupplyCrate = new Supply(supplyItem, worldConfig);
             self.supplyItems.push(newSupplyCrate);
             self.lastSupplySpawnTime = new Date().getTime();
@@ -30,7 +29,7 @@ SupplyController.prototype.spawnOneSupplyWithInterval = function (worldConfig, s
     let self = this;
         let i = getRandomInt(0, supplyConfig.length - 1 );
         let supplyItem = supplyConfig[i];
-        if (self.supplyItems.count() < supplyItem.maxSupplyCount)  {
+        if (self.supplyItems.length < supplyItem.maxSupplyCount)  {
             let newSupplyCrate = new Supply(supplyItem, worldConfig);
             self.supplyItems.push(newSupplyCrate);
             return null;
