@@ -4,15 +4,17 @@ const config = require('../../config/game');
 const Chance = require('chance');
 const chance = new Chance();
 
-function Supply (supplyData, worldConfig) {
+function Supply (supplyListLength, supplyData, worldConfig) {
     this.pos_x = 0;
     this.pos_y = 0;
     this.pos_z = 0;
     this.supplyConfigData = supplyData;
     this.supplyName = supplyData.name;
     this.supplyIncome = supplyData.income;
-    this.supplyId =  supplyData.supplyId + uuidv4();
+    this.supplyId =  supplyListLength + 1;
     this.isDeath = false;
+    this.isNew = true;
+    this.looterShipId = "";
     this.assetName = supplyData.assetName;
     this.SetRandomPosition(worldConfig);
 }

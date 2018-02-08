@@ -1,0 +1,12 @@
+namespace SailorIO.ClientInputModel;
+enum ClientEventEnum : byte { GET_WORLD_INFO }
+union ClientEventTypes { GetWorldInfo, WorldInfoTable }
+
+table GetWorldInfo {
+
+}
+table ClientInput {
+  ClientEventType:ClientEventEnum;
+  Event:ClientEventTypes;
+}
+root_type ClientInput;

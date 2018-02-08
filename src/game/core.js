@@ -11,10 +11,17 @@ const PlayerController = require("./controllers/player.controller");
 const ShipController = require("./controllers/ship.controller");
 const EntityController = require("./controllers/entity.controller");
 
+const flatbuffers = require('flatbuffers').flatbuffers;
+const Packet = require("./fbs/message_generated").SailorIO;
+const ClientInputPacket = require("./fbs/clientinput_generated").SailorIO;
+
 exports = module.exports = ServerCore;
 
-function ServerCore(socket) {
+function ServerCore(socket, uws) {
     this.options = config;
+    this.uws = uws;
+    this.uws.binaryType = 'arraybuffer';
+    this.uws.options = { binary: true };
     this.io = socket;
     this.lastUpdateTime = 0;
     this.updatePassTime = null;
@@ -32,23 +39,26 @@ function ServerCore(socket) {
 }
 
 ServerCore.prototype.broadcastState = function () {
+    let builder = new flatbuffers.Builder(0);
+
     let serverTime = new Date().getTime() - this.startTime;
     this.updatePassTime = serverTime - this.lastUpdateTime;
     this.lastUpdateTime = serverTime;
-    let i = 0;
-
-    let state = {
-        currTime: serverTime,
-        supplyCrates: this.supplyController.GetAllSupplies(),
-        shipModels: this.shipController.GetAllShips(),
-        svTickRate: this.options.game.interval };
-
+    //let updateTime =  builder.createString((new Date().getTime() / 1000.00000);
+    let updateTime =  new Date().getTime() / 1000.00000;
+    Packet.Models.UpdateModel.createSupplyCratesVector(builder, this.supplyController.GetSupplies(Packet, builder));
+    Packet.Models.UpdateModel.createShipModelsVector(builder, this.shipController.GetAllShips(Packet, builder));
+    Packet.Models.UpdateModel.startUpdateModel(builder);
+    Packet.Models.UpdateModel.addUpdatePassTime(builder, this.updatePassTime);
+    Packet.Models.UpdateModel.addEventType(builder, Packet.Models.EventTypes.UpdateModel);
+    Packet.Models.UpdateModel.addUpdateTime(builder, updateTime);
+    let updateModel = Packet.Models.UpdateModel.endUpdateModel(builder);
+    builder.finish(updateModel);
     this.supplyController.supplyItems = this.supplyController.supplyItems.filter(function(el) { return el.isDeath === false });
-
-    let updateTime = new Date().getTime() / 1000.00000;
-    state.updateTime = updateTime.toFixed(3);
-    state.updatePassTime = this.updatePassTime;
-    this.io.emit('worldUpdate', state);
+    let buffer = builder.asUint8Array();
+    console.log("DATA LEN: "+ buffer.length);
+    console.log("TOTAL USER: "+ this.uws.clients.length);
+    this.uws.broadcast(buffer, this.uws.options);
 };
 
 ServerCore.prototype.removePlayer = function (socket, id) {
@@ -110,16 +120,79 @@ ServerCore.prototype.feedShip = function (feedModel) {
 
 };
 
+ServerCore.prototype.messageHandler = function (ws, message) {
+    let buf = new flatbuffers.ByteBuffer(message);
+    let userInput = ClientInputPacket.ClientInputModel.ClientInput.getRootAsClientInput(buf);
+    let eventType = userInput.ClientEventType();
+
+    if (eventType === ClientInputPacket.ClientInputModel.ClientEventEnum.GET_WORLD_INFO ) {
+        console.log("GET_WORLD_INFO EVENT TRIGGERED");
+
+        let builder = new flatbuffers.Builder(0);
+        Packet.Models.WorldInfoTable.startWorldInfoTable(builder);
+        Packet.Models.WorldInfoTable.addHeight(builder, this.worldConfig.height);
+        Packet.Models.WorldInfoTable.addWidth(builder, this.worldConfig.width);
+        Packet.Models.WorldInfoTable.addLength(builder, this.worldConfig.length);
+        Packet.Models.WorldInfoTable.addOffSetX(builder, this.worldConfig.offSetX);
+        Packet.Models.WorldInfoTable.addOffSetY(builder, this.worldConfig.offSetY);
+        Packet.Models.WorldInfoTable.addOffSetZ(builder, this.worldConfig.offSetZ);
+        let worldInfo = Packet.Models.WorldInfoTable.endWorldInfoTable(builder);
+        let supplyList = Packet.Models.UpdateModel.createSupplyCratesVector(builder, this.supplyController.GetAllSupplies(Packet, builder));
+        Packet.Models.UpdateModel.startUpdateModel(builder);
+        Packet.Models.UpdateModel.addSupplyCrates(builder, supplyList);
+        Packet.Models.UpdateModel.addEventType(builder, Packet.Models.EventTypes.WorldInfoUpdate);
+        Packet.Models.UpdateModel.addWorldInfo(builder, worldInfo);
+
+        let updateModel = Packet.Models.UpdateModel.endUpdateModel(builder);
+        builder.finish(updateModel);
+
+        let buffer = builder.asUint8Array();
+
+        console.log("World INFO LEN: "+ buffer.length);
+        ws.send(buffer ,this.uws.options)
+    }
+
+};
+ServerCore.prototype.startUws = function () {
+    this.startTime = new Date().getTime();
+
+
+    function noop() {}
+
+    function heartbeat() {
+        this.isAlive = true;
+    }
+
+    let self = this;
+
+    function onMessage(message) {
+        self.messageHandler(this, message);
+    }
+
+    self.uws.on('connection', function(ws) {
+        console.log('Someone connected');
+        ws.isAlive = true;
+        ws.on('pong', heartbeat);
+        ws.on('message', onMessage);
+    });
+
+    self.stateIntervalId = setInterval(function () { self.broadcastState(); }, 1000 / this.options.game.interval);
+    self.supplyIntervalId = setInterval(function () { self.supplyController.spawnOneSupplyWithInterval(self.worldConfig, self.supplyConfig);}, 1000 / self.worldConfig.supplyRespawnSec);
+    self.pingInterval = setInterval(function ping() {
+        self.uws.clients.forEach(function each(ws) {
+            if (ws.isAlive === false) return ws.terminate();
+
+            ws.isAlive = false;
+            ws.ping(noop);
+        });
+    }, 30000);
+};
+
 ServerCore.prototype.start = function () {
     this.startTime = new Date().getTime();
-    var self = this;
-    this.supplyController.spawnOneSupply(this.worldConfig, this.supplyConfig);
+    let self = this;
     self.io.on('connection', function(socket){
         console.log("connection has been made");
-
-        //TODO: TEMP
-        //********************************
-
 
         socket.on('getWorldInfo', function () {
             console.log("user wants to know world info > "+socket.client.id);
@@ -163,7 +236,6 @@ ServerCore.prototype.start = function () {
     });
 
     //update per second
-    self.stateIntervalId = setInterval(function () { self.broadcastState(); }, 1000 / this.options.game.interval);
     self.supplyIntervalId = setInterval(function () { self.supplyController.spawnOneSupplyWithInterval(self.worldConfig, self.supplyConfig);}, 1000 / self.worldConfig.supplyRespawnSec);
 
 };

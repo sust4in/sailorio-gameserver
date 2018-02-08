@@ -4,22 +4,19 @@ const config = require('../../config/game');
 const THREE = require('three');
 exports = module.exports = Ship;
 
-function Ship (player, shipConfig) {
+function Ship (shipListLen, player, shipConfig) {
     this.currentCrewMembersIds = [];
     this.shipName = player.Username+ "'s Ship";
     //using for making unique object
-    let uniqueId = this.shipName+ "#" + uuidv4();
+    let uniqueId = shipListLen + 1;
     Entity.call(this, uniqueId);
     this.assetName = shipConfig.assetName;
     this.captainUserId = player.Id;
     this.captain = player;
     this.slopeSpeed = shipConfig.slopeSpeed;
-    this.maxSuppliesCount = shipConfig.maxSuppliesCount;
     this.currentSuppliesCount = 0;
-    this.maxSailorsCount = shipConfig.maxSailorsCount;
     this.currentSailorsCount = 0;
     this.marketPrice = shipConfig.marketPrice;
-    this.maxHealth = shipConfig.maxHealth;
     this.currentHealth = shipConfig.maxHealth;
     this.rotationSpeed = shipConfig.rotationSpeed;
     this.movementSpeed = shipConfig.movementSpeed;

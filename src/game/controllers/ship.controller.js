@@ -10,7 +10,7 @@ function ShipController () {
 ShipController.prototype = Object.create(entityController.prototype);
 ShipController.prototype = {
     add: function (player, shipConfig) {
-        let newShip = new Ship(player, shipConfig);
+        let newShip = new Ship(this.entities.length, player, shipConfig);
         this.entities.push(newShip);
     },
     remove: function (socket) {
@@ -37,33 +37,34 @@ ShipController.prototype.addInput = function (id, inputName, input, time) {
     });
 };
 
-ShipController.prototype.GetAllShips = function () {
+ShipController.prototype.GetAllShips = function (Packet, builder) {
     let self = this;
     let shipList = [];
     self.entities.forEach(function (entity) {
-        //TODO: Collision
         entity.moveForward();
-        shipList.push({
-            pos_x: entity.pos_x,
-            pos_z: entity.pos_z,
-            pos_y: entity.pos_y,
-            viewAngle: entity.viewAngle,
-            Id: entity.id,
-            assetName: entity.assetName,
-            captainUserId: entity.captainUserId,
-            maxSuppliesCount: entity.maxSuppliesCount,
-            currentSuppliesCount: entity.currentSuppliesCount,
-            maxSailorsCount: entity.maxSailorsCount,
-            currentSailorsCount: entity.currentSailorsCount,
-            maxHealth: entity.maxHealth,
-            currentHealth: entity.currentHealth,
-            slopeSpeed: entity.slopeSpeed,
-            rotationSpeed: entity.rotationSpeed,
-            movementSpeed: entity.movementSpeed,
-            lastMoveUpdateTs: (new Date().getTime() / 1000.000).toFixed(3),
-            inputs: entity.inputs,
-            lastProcessedInputSeqId: entity.lastProcessedInputSeqId
-        });
+
+        let Id = builder.createString(entity.id);
+        let assetName = builder.createString(entity.assetName);
+        let captainUserId = builder.createString(entity.captainUserId);
+        Packet.Models.Ship.startShip(builder);
+        Packet.Models.Ship.addId(builder, Id);
+        Packet.Models.Ship.addAssetName(builder, assetName);
+        Packet.Models.Ship.addCaptainUserId(builder, captainUserId);
+        Packet.Models.Ship.addPos(builder,
+            Packet.Models.Vec3.createVec3(builder,
+                entity.pos_x,
+                entity.pos_z,
+                entity.pos_y,
+            ));
+        Packet.Models.Ship.addViewAngle(builder, entity.viewAngle);
+        Packet.Models.Ship.addCurrentSuppliesCount(builder, entity.currentSuppliesCount);
+        Packet.Models.Ship.addCurrentSailorsCount(builder, entity.currentSailorsCount);
+        Packet.Models.Ship.addCurrentHealth(builder, entity.currentHealth);
+        Packet.Models.Ship.addSlopeSpeed(builder, entity.slopeSpeed);
+        Packet.Models.Ship.addRotationSpeed(builder, entity.rotationSpeed);
+        Packet.Models.Ship.addMovementSpeed(builder, entity.movementSpeed);
+        let ship = Packet.Models.Ship.endShip(builder);
+        shipList.push(ship);
     });
     return shipList;
 };

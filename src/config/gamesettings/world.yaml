@@ -6,4 +6,4 @@ offSetX : 0
 offSetZ : 0
 offSetY : 1
 deltaTime : 0.02
-supplyRespawnSec : 0.25
+supplyRespawnSec : 5
