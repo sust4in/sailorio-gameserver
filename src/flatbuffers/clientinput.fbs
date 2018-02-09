@@ -1,12 +1,20 @@
 namespace SailorIO.ClientInputModel;
-enum ClientEventEnum : byte { GET_WORLD_INFO }
-union ClientEventTypes { GetWorldInfo, WorldInfoTable }
+union ClientEventTypes { GetWorldInfo, NewPlayer, BuyNewShip, SailShip }
+enum ShipTypes : byte { RAFT1 }
 
+table BuyNewShip {
+  ship:ShipTypes;
+}
+table SailShip {
+
+}
 table GetWorldInfo {
 
 }
+table NewPlayer {
+    accessToken:string;
+}
 table ClientInput {
-  ClientEventType:ClientEventEnum;
   Event:ClientEventTypes;
 }
 root_type ClientInput;

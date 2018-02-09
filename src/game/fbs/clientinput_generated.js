@@ -15,33 +15,25 @@ SailorIO.ClientInputModel = SailorIO.ClientInputModel || {};
 /**
  * @enum
  */
-SailorIO.ClientInputModel.ClientEventEnum = {
-  GET_WORLD_INFO: 0
-};
-
-/**
- * @enum
- */
-SailorIO.ClientInputModel.SupplyTypes = {
-  CRATE1: 0,
-  CRATE2: 1,
-  WOODENBARREL1: 2,
-  WOODENBARREL2: 3
-};
-
-/**
- * @enum
- */
 SailorIO.ClientInputModel.ClientEventTypes = {
   NONE: 0,
   GetWorldInfo: 1,
-  WorldInfoTable: 2
+  NewPlayer: 2,
+  BuyNewShip: 3,
+  SailShip: 4
+};
+
+/**
+ * @enum
+ */
+SailorIO.ClientInputModel.ShipTypes = {
+  RAFT1: 0
 };
 
 /**
  * @constructor
  */
-SailorIO.ClientInputModel.Vec3 = function() {
+SailorIO.ClientInputModel.BuyNewShip = function() {
   /**
    * @type {flatbuffers.ByteBuffer}
    */
@@ -56,71 +48,9 @@ SailorIO.ClientInputModel.Vec3 = function() {
 /**
  * @param {number} i
  * @param {flatbuffers.ByteBuffer} bb
- * @returns {SailorIO.ClientInputModel.Vec3}
+ * @returns {SailorIO.ClientInputModel.BuyNewShip}
  */
-SailorIO.ClientInputModel.Vec3.prototype.__init = function(i, bb) {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
-};
-
-/**
- * @returns {number}
- */
-SailorIO.ClientInputModel.Vec3.prototype.x = function() {
-  return this.bb.readFloat32(this.bb_pos);
-};
-
-/**
- * @returns {number}
- */
-SailorIO.ClientInputModel.Vec3.prototype.y = function() {
-  return this.bb.readFloat32(this.bb_pos + 4);
-};
-
-/**
- * @returns {number}
- */
-SailorIO.ClientInputModel.Vec3.prototype.z = function() {
-  return this.bb.readFloat32(this.bb_pos + 8);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} x
- * @param {number} y
- * @param {number} z
- * @returns {flatbuffers.Offset}
- */
-SailorIO.ClientInputModel.Vec3.createVec3 = function(builder, x, y, z) {
-  builder.prep(4, 12);
-  builder.writeFloat32(z);
-  builder.writeFloat32(y);
-  builder.writeFloat32(x);
-  return builder.offset();
-};
-
-/**
- * @constructor
- */
-SailorIO.ClientInputModel.Supply = function() {
-  /**
-   * @type {flatbuffers.ByteBuffer}
-   */
-  this.bb = null;
-
-  /**
-   * @type {number}
-   */
-  this.bb_pos = 0;
-};
-
-/**
- * @param {number} i
- * @param {flatbuffers.ByteBuffer} bb
- * @returns {SailorIO.ClientInputModel.Supply}
- */
-SailorIO.ClientInputModel.Supply.prototype.__init = function(i, bb) {
+SailorIO.ClientInputModel.BuyNewShip.prototype.__init = function(i, bb) {
   this.bb_pos = i;
   this.bb = bb;
   return this;
@@ -128,90 +58,92 @@ SailorIO.ClientInputModel.Supply.prototype.__init = function(i, bb) {
 
 /**
  * @param {flatbuffers.ByteBuffer} bb
- * @param {SailorIO.ClientInputModel.Supply=} obj
- * @returns {SailorIO.ClientInputModel.Supply}
+ * @param {SailorIO.ClientInputModel.BuyNewShip=} obj
+ * @returns {SailorIO.ClientInputModel.BuyNewShip}
  */
-SailorIO.ClientInputModel.Supply.getRootAsSupply = function(bb, obj) {
-  return (obj || new SailorIO.ClientInputModel.Supply).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+SailorIO.ClientInputModel.BuyNewShip.getRootAsBuyNewShip = function(bb, obj) {
+  return (obj || new SailorIO.ClientInputModel.BuyNewShip).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 };
 
 /**
- * @param {SailorIO.ClientInputModel.Vec3=} obj
- * @returns {SailorIO.ClientInputModel.Vec3|null}
+ * @returns {SailorIO.ClientInputModel.ShipTypes}
  */
-SailorIO.ClientInputModel.Supply.prototype.pos = function(obj) {
+SailorIO.ClientInputModel.BuyNewShip.prototype.ship = function() {
   var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? (obj || new SailorIO.ClientInputModel.Vec3).__init(this.bb_pos + offset, this.bb) : null;
-};
-
-/**
- * @returns {SailorIO.ClientInputModel.SupplyTypes}
- */
-SailorIO.ClientInputModel.Supply.prototype.supplyId = function() {
-  var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? /** @type {SailorIO.ClientInputModel.SupplyTypes} */ (this.bb.readInt8(this.bb_pos + offset)) : SailorIO.ClientInputModel.SupplyTypes.CRATE1;
-};
-
-/**
- * @returns {boolean}
- */
-SailorIO.ClientInputModel.Supply.prototype.isDeath = function() {
-  var offset = this.bb.__offset(this.bb_pos, 8);
-  return offset ? !!this.bb.readInt8(this.bb_pos + offset) : false;
-};
-
-/**
- * @returns {boolean}
- */
-SailorIO.ClientInputModel.Supply.prototype.isNew = function() {
-  var offset = this.bb.__offset(this.bb_pos, 10);
-  return offset ? !!this.bb.readInt8(this.bb_pos + offset) : false;
+  return offset ? /** @type {SailorIO.ClientInputModel.ShipTypes} */ (this.bb.readInt8(this.bb_pos + offset)) : SailorIO.ClientInputModel.ShipTypes.RAFT1;
 };
 
 /**
  * @param {flatbuffers.Builder} builder
  */
-SailorIO.ClientInputModel.Supply.startSupply = function(builder) {
-  builder.startObject(4);
+SailorIO.ClientInputModel.BuyNewShip.startBuyNewShip = function(builder) {
+  builder.startObject(1);
 };
 
 /**
  * @param {flatbuffers.Builder} builder
- * @param {flatbuffers.Offset} posOffset
+ * @param {SailorIO.ClientInputModel.ShipTypes} ship
  */
-SailorIO.ClientInputModel.Supply.addPos = function(builder, posOffset) {
-  builder.addFieldStruct(0, posOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {SailorIO.ClientInputModel.SupplyTypes} supplyId
- */
-SailorIO.ClientInputModel.Supply.addSupplyId = function(builder, supplyId) {
-  builder.addFieldInt8(1, supplyId, SailorIO.ClientInputModel.SupplyTypes.CRATE1);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {boolean} isDeath
- */
-SailorIO.ClientInputModel.Supply.addIsDeath = function(builder, isDeath) {
-  builder.addFieldInt8(2, +isDeath, +false);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {boolean} isNew
- */
-SailorIO.ClientInputModel.Supply.addIsNew = function(builder, isNew) {
-  builder.addFieldInt8(3, +isNew, +false);
+SailorIO.ClientInputModel.BuyNewShip.addShip = function(builder, ship) {
+  builder.addFieldInt8(0, ship, SailorIO.ClientInputModel.ShipTypes.RAFT1);
 };
 
 /**
  * @param {flatbuffers.Builder} builder
  * @returns {flatbuffers.Offset}
  */
-SailorIO.ClientInputModel.Supply.endSupply = function(builder) {
+SailorIO.ClientInputModel.BuyNewShip.endBuyNewShip = function(builder) {
+  var offset = builder.endObject();
+  return offset;
+};
+
+/**
+ * @constructor
+ */
+SailorIO.ClientInputModel.SailShip = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {SailorIO.ClientInputModel.SailShip}
+ */
+SailorIO.ClientInputModel.SailShip.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {SailorIO.ClientInputModel.SailShip=} obj
+ * @returns {SailorIO.ClientInputModel.SailShip}
+ */
+SailorIO.ClientInputModel.SailShip.getRootAsSailShip = function(bb, obj) {
+  return (obj || new SailorIO.ClientInputModel.SailShip).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ */
+SailorIO.ClientInputModel.SailShip.startSailShip = function(builder) {
+  builder.startObject(0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @returns {flatbuffers.Offset}
+ */
+SailorIO.ClientInputModel.SailShip.endSailShip = function(builder) {
   var offset = builder.endObject();
   return offset;
 };
@@ -270,7 +202,7 @@ SailorIO.ClientInputModel.GetWorldInfo.endGetWorldInfo = function(builder) {
 /**
  * @constructor
  */
-SailorIO.ClientInputModel.WorldInfoTable = function() {
+SailorIO.ClientInputModel.NewPlayer = function() {
   /**
    * @type {flatbuffers.ByteBuffer}
    */
@@ -285,9 +217,9 @@ SailorIO.ClientInputModel.WorldInfoTable = function() {
 /**
  * @param {number} i
  * @param {flatbuffers.ByteBuffer} bb
- * @returns {SailorIO.ClientInputModel.WorldInfoTable}
+ * @returns {SailorIO.ClientInputModel.NewPlayer}
  */
-SailorIO.ClientInputModel.WorldInfoTable.prototype.__init = function(i, bb) {
+SailorIO.ClientInputModel.NewPlayer.prototype.__init = function(i, bb) {
   this.bb_pos = i;
   this.bb = bb;
   return this;
@@ -295,168 +227,42 @@ SailorIO.ClientInputModel.WorldInfoTable.prototype.__init = function(i, bb) {
 
 /**
  * @param {flatbuffers.ByteBuffer} bb
- * @param {SailorIO.ClientInputModel.WorldInfoTable=} obj
- * @returns {SailorIO.ClientInputModel.WorldInfoTable}
+ * @param {SailorIO.ClientInputModel.NewPlayer=} obj
+ * @returns {SailorIO.ClientInputModel.NewPlayer}
  */
-SailorIO.ClientInputModel.WorldInfoTable.getRootAsWorldInfoTable = function(bb, obj) {
-  return (obj || new SailorIO.ClientInputModel.WorldInfoTable).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+SailorIO.ClientInputModel.NewPlayer.getRootAsNewPlayer = function(bb, obj) {
+  return (obj || new SailorIO.ClientInputModel.NewPlayer).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 };
 
 /**
- * @returns {number}
+ * @param {flatbuffers.Encoding=} optionalEncoding
+ * @returns {string|Uint8Array|null}
  */
-SailorIO.ClientInputModel.WorldInfoTable.prototype.height = function() {
+SailorIO.ClientInputModel.NewPlayer.prototype.accessToken = function(optionalEncoding) {
   var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
-};
-
-/**
- * @returns {number}
- */
-SailorIO.ClientInputModel.WorldInfoTable.prototype.width = function() {
-  var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
-};
-
-/**
- * @returns {number}
- */
-SailorIO.ClientInputModel.WorldInfoTable.prototype.length = function() {
-  var offset = this.bb.__offset(this.bb_pos, 8);
-  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
-};
-
-/**
- * @returns {number}
- */
-SailorIO.ClientInputModel.WorldInfoTable.prototype.offSetX = function() {
-  var offset = this.bb.__offset(this.bb_pos, 10);
-  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
-};
-
-/**
- * @returns {number}
- */
-SailorIO.ClientInputModel.WorldInfoTable.prototype.offSetZ = function() {
-  var offset = this.bb.__offset(this.bb_pos, 12);
-  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
-};
-
-/**
- * @returns {number}
- */
-SailorIO.ClientInputModel.WorldInfoTable.prototype.offSetY = function() {
-  var offset = this.bb.__offset(this.bb_pos, 14);
-  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
-};
-
-/**
- * @param {number} index
- * @param {SailorIO.ClientInputModel.Supply=} obj
- * @returns {SailorIO.ClientInputModel.Supply}
- */
-SailorIO.ClientInputModel.WorldInfoTable.prototype.currentSupplies = function(index, obj) {
-  var offset = this.bb.__offset(this.bb_pos, 16);
-  return offset ? (obj || new SailorIO.ClientInputModel.Supply).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-SailorIO.ClientInputModel.WorldInfoTable.prototype.currentSuppliesLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 16);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
 };
 
 /**
  * @param {flatbuffers.Builder} builder
  */
-SailorIO.ClientInputModel.WorldInfoTable.startWorldInfoTable = function(builder) {
-  builder.startObject(7);
+SailorIO.ClientInputModel.NewPlayer.startNewPlayer = function(builder) {
+  builder.startObject(1);
 };
 
 /**
  * @param {flatbuffers.Builder} builder
- * @param {number} height
+ * @param {flatbuffers.Offset} accessTokenOffset
  */
-SailorIO.ClientInputModel.WorldInfoTable.addHeight = function(builder, height) {
-  builder.addFieldInt32(0, height, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} width
- */
-SailorIO.ClientInputModel.WorldInfoTable.addWidth = function(builder, width) {
-  builder.addFieldInt32(1, width, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} length
- */
-SailorIO.ClientInputModel.WorldInfoTable.addLength = function(builder, length) {
-  builder.addFieldInt32(2, length, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} offSetX
- */
-SailorIO.ClientInputModel.WorldInfoTable.addOffSetX = function(builder, offSetX) {
-  builder.addFieldInt32(3, offSetX, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} offSetZ
- */
-SailorIO.ClientInputModel.WorldInfoTable.addOffSetZ = function(builder, offSetZ) {
-  builder.addFieldInt32(4, offSetZ, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} offSetY
- */
-SailorIO.ClientInputModel.WorldInfoTable.addOffSetY = function(builder, offSetY) {
-  builder.addFieldInt32(5, offSetY, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {flatbuffers.Offset} currentSuppliesOffset
- */
-SailorIO.ClientInputModel.WorldInfoTable.addCurrentSupplies = function(builder, currentSuppliesOffset) {
-  builder.addFieldOffset(6, currentSuppliesOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-SailorIO.ClientInputModel.WorldInfoTable.createCurrentSuppliesVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-SailorIO.ClientInputModel.WorldInfoTable.startCurrentSuppliesVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
+SailorIO.ClientInputModel.NewPlayer.addAccessToken = function(builder, accessTokenOffset) {
+  builder.addFieldOffset(0, accessTokenOffset, 0);
 };
 
 /**
  * @param {flatbuffers.Builder} builder
  * @returns {flatbuffers.Offset}
  */
-SailorIO.ClientInputModel.WorldInfoTable.endWorldInfoTable = function(builder) {
+SailorIO.ClientInputModel.NewPlayer.endNewPlayer = function(builder) {
   var offset = builder.endObject();
   return offset;
 };
@@ -497,18 +303,10 @@ SailorIO.ClientInputModel.ClientInput.getRootAsClientInput = function(bb, obj) {
 };
 
 /**
- * @returns {SailorIO.ClientInputModel.ClientEventEnum}
- */
-SailorIO.ClientInputModel.ClientInput.prototype.ClientEventType = function() {
-  var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? /** @type {SailorIO.ClientInputModel.ClientEventEnum} */ (this.bb.readInt8(this.bb_pos + offset)) : SailorIO.ClientInputModel.ClientEventEnum.GET_WORLD_INFO;
-};
-
-/**
  * @returns {SailorIO.ClientInputModel.ClientEventTypes}
  */
 SailorIO.ClientInputModel.ClientInput.prototype.EventType = function() {
-  var offset = this.bb.__offset(this.bb_pos, 6);
+  var offset = this.bb.__offset(this.bb_pos, 4);
   return offset ? /** @type {SailorIO.ClientInputModel.ClientEventTypes} */ (this.bb.readUint8(this.bb_pos + offset)) : SailorIO.ClientInputModel.ClientEventTypes.NONE;
 };
 
@@ -517,7 +315,7 @@ SailorIO.ClientInputModel.ClientInput.prototype.EventType = function() {
  * @returns {?flatbuffers.Table}
  */
 SailorIO.ClientInputModel.ClientInput.prototype.Event = function(obj) {
-  var offset = this.bb.__offset(this.bb_pos, 8);
+  var offset = this.bb.__offset(this.bb_pos, 6);
   return offset ? this.bb.__union(obj, this.bb_pos + offset) : null;
 };
 
@@ -525,15 +323,7 @@ SailorIO.ClientInputModel.ClientInput.prototype.Event = function(obj) {
  * @param {flatbuffers.Builder} builder
  */
 SailorIO.ClientInputModel.ClientInput.startClientInput = function(builder) {
-  builder.startObject(3);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {SailorIO.ClientInputModel.ClientEventEnum} ClientEventType
- */
-SailorIO.ClientInputModel.ClientInput.addClientEventType = function(builder, ClientEventType) {
-  builder.addFieldInt8(0, ClientEventType, SailorIO.ClientInputModel.ClientEventEnum.GET_WORLD_INFO);
+  builder.startObject(2);
 };
 
 /**
@@ -541,7 +331,7 @@ SailorIO.ClientInputModel.ClientInput.addClientEventType = function(builder, Cli
  * @param {SailorIO.ClientInputModel.ClientEventTypes} EventType
  */
 SailorIO.ClientInputModel.ClientInput.addEventType = function(builder, EventType) {
-  builder.addFieldInt8(1, EventType, SailorIO.ClientInputModel.ClientEventTypes.NONE);
+  builder.addFieldInt8(0, EventType, SailorIO.ClientInputModel.ClientEventTypes.NONE);
 };
 
 /**
@@ -549,7 +339,7 @@ SailorIO.ClientInputModel.ClientInput.addEventType = function(builder, EventType
  * @param {flatbuffers.Offset} EventOffset
  */
 SailorIO.ClientInputModel.ClientInput.addEvent = function(builder, EventOffset) {
-  builder.addFieldOffset(2, EventOffset, 0);
+  builder.addFieldOffset(1, EventOffset, 0);
 };
 
 /**

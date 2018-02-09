@@ -15,7 +15,7 @@ ShipController.prototype = {
     },
     remove: function (socket) {
         this.entities = this.entities.filter(function(item) {
-            return item.captainUserId !== socket.client.id
+            return item.captainUserId !== socket.id
         });
     },
     get: function (socket) {
@@ -42,19 +42,15 @@ ShipController.prototype.GetAllShips = function (Packet, builder) {
     let shipList = [];
     self.entities.forEach(function (entity) {
         entity.moveForward();
-
-        let Id = builder.createString(entity.id);
-        let assetName = builder.createString(entity.assetName);
-        let captainUserId = builder.createString(entity.captainUserId);
         Packet.Models.Ship.startShip(builder);
-        Packet.Models.Ship.addId(builder, Id);
-        Packet.Models.Ship.addAssetName(builder, assetName);
-        Packet.Models.Ship.addCaptainUserId(builder, captainUserId);
+        Packet.Models.Ship.addId(builder, entity.id);
+        Packet.Models.Ship.addAssetType(builder, Packet.Models.ShipTypes[this.assetName]);
+        Packet.Models.Ship.addCaptainUserId(builder, entity.captainUserId);
         Packet.Models.Ship.addPos(builder,
             Packet.Models.Vec3.createVec3(builder,
                 entity.pos_x,
-                entity.pos_z,
                 entity.pos_y,
+                entity.pos_z,
             ));
         Packet.Models.Ship.addViewAngle(builder, entity.viewAngle);
         Packet.Models.Ship.addCurrentSuppliesCount(builder, entity.currentSuppliesCount);

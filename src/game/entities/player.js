@@ -6,7 +6,10 @@ function Player (socket) {
     entity.call(this, socket);
     this.socket = socket;
     this.Username = "Default";
-    this.Id = socket.client.id;
+    this.gold = 150;
+    this.shipCount = 0;
+    this.onShip = false;
+    this.hasShip = false;
     this.inputs = [];
 }
 

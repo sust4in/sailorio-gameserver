@@ -8,10 +8,9 @@ function Ship (shipListLen, player, shipConfig) {
     this.currentCrewMembersIds = [];
     this.shipName = player.Username+ "'s Ship";
     //using for making unique object
-    let uniqueId = shipListLen + 1;
-    Entity.call(this, uniqueId);
+    Entity.call(this, player);
     this.assetName = shipConfig.assetName;
-    this.captainUserId = player.Id;
+    this.captainUserId = player.id;
     this.captain = player;
     this.slopeSpeed = shipConfig.slopeSpeed;
     this.currentSuppliesCount = 0;
@@ -24,6 +23,7 @@ function Ship (shipListLen, player, shipConfig) {
     this.pos_x = 0;
     this.pos_y = 0;
     this.pos_z = 0;
+    this.isSail = true;
     this.sailors = [];
     this.inputs = [];
     this.sailors.push(player);
@@ -41,7 +41,10 @@ Ship.prototype.validateInput = function(dt_time) {
 Ship.prototype.moveForward = function () {
     //if it has an index about given input. it return > -1 index number.
     //TODO:0.02 must be on game.yaml
-    this.pos_z += (this.absSpeed * config.game.absolute_delta_time * this.movementSpeed / config.game.interval);
+    if(this.isSail)
+    {
+        this.pos_z += (this.absSpeed * config.game.absolute_delta_time * this.movementSpeed / config.game.interval);
+    }
 };
 
 // Ship.prototype.moveTo = function (data) {

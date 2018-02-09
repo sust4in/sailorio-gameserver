@@ -14,7 +14,7 @@ PlayerController.prototype.add = function (socket) {
     let newPlayer, playerFound = false;
 
     this.entities.some(function (player) {
-        if (player.id === socket.client.id) {
+        if (player.id === socket.id) {
             newPlayer = player;
             playerFound = true;
             return true;
@@ -30,8 +30,11 @@ PlayerController.prototype.add = function (socket) {
 
 PlayerController.prototype.remove = function (socket) {
     this.entities = this.entities.filter(function(item) {
-        return item.id !== socket.id
+        return item.id !== socket.id && item.secureId !== socket.secureId
     });
+};
+PlayerController.prototype.get = function (socket) {
+    return this.entities.findIndex(x => x.id === socket.id && x.secureId === socket.secureId);
 };
 
 PlayerController.prototype.addInput = function (id, inputName, input, time) {

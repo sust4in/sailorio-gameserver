@@ -6,4 +6,5 @@ offSetX : 0
 offSetZ : 0
 offSetY : 1
 deltaTime : 0.02
+maxUser : 500
 supplyRespawnSec : 5

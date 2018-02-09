@@ -1,7 +1,7 @@
 --- Supplies
 - name: "Crate1"
   supplyId  : "crate-1#"
-  assetName : "Crate-1"
+  assetName : "CRATE1"
   income  : 50
   maxSupplyCount: 50
 - name: "Crate2"
@@ -9,16 +9,16 @@
     length: 10
     width: 10
   supplyId  : "crate-2#"
-  assetName : "Crate-2"
+  assetName : "CRATE2"
   income  : 100
   maxSupplyCount: 50
-- name: "WoodenBarrel-1"
+- name: "WoodenBarrel1"
   supplyId  : "WoodenBarrel-1#"
-  assetName : "WoodenBarrel-1"
+  assetName : "WOODENBARREL1"
   income  : 100
   maxSupplyCount: 20
-- name: "WoodenBarrel-2"
+- name: "WoodenBarrel2"
   supplyId  : "WoodenBarrel-2#"
-  assetName : "WoodenBarrel-2"
+  assetName : "WOODENBARREL2"
   income  : 100
   maxSupplyCount: 20

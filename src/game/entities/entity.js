@@ -1,6 +1,6 @@
 exports = module.exports = Entity;
 
-function Entity (id) {
+function Entity (player) {
     this.colliders = [];
     this.pos_x = 0.00;
     this.pos_y = 0.00;
@@ -11,7 +11,8 @@ function Entity (id) {
     this.rotationSpeed = 0;
     this.viewAngle = 0;
     this.lastProcessedInputSeqId = null;
-    this.id = id;
+    this.id = player.id;
+    this.secureId = player.secureId;
 }
 
 Entity.prototype = {

@@ -47,11 +47,11 @@ SupplyController.prototype.GetAllSupplies = function (Packet, builder) {
             Packet.Models.Supply.addPos(builder,
                 Packet.Models.Vec3.createVec3(builder,
                     supplyCrate.pos_x,
-                    supplyCrate.pos_z,
                     supplyCrate.pos_y,
+                    supplyCrate.pos_z,
                 ));
 
-            Packet.Models.Supply.addSupplyId(builder, Packet.Models.SupplyTypes.CRATE1);
+            Packet.Models.Supply.addAssetId(builder, Packet.Models.SupplyTypes[supplyCrate.assetName]);
 
             let supply = Packet.Models.Supply.endSupply(builder);
             supplyList.push(supply);
@@ -70,11 +70,11 @@ SupplyController.prototype.GetSupplies = function (Packet, builder) {
             Packet.Models.Supply.addPos(builder,
                 Packet.Models.Vec3.createVec3(builder,
                     supplyCrate.pos_x,
-                    supplyCrate.pos_z,
                     supplyCrate.pos_y,
+                    supplyCrate.pos_z,
                 ));
 
-            Packet.Models.Supply.addSupplyId(builder, Packet.Models.SupplyTypes.CRATE1);
+            Packet.Models.Supply.addAssetId(builder, Packet.Models.SupplyTypes[supplyCrate.assetName]);
 
             if (supplyCrate.isNew)
             {

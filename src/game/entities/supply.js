@@ -11,7 +11,7 @@ function Supply (supplyListLength, supplyData, worldConfig) {
     this.supplyConfigData = supplyData;
     this.supplyName = supplyData.name;
     this.supplyIncome = supplyData.income;
-    this.supplyId =  supplyListLength + 1;
+    this.supplyId = "";
     this.isDeath = false;
     this.isNew = true;
     this.looterShipId = "";
@@ -24,5 +24,6 @@ Supply.prototype.SetRandomPosition = function(worldConfig) {
     self.pos_x = chance.floating({min: worldConfig.worldLeftX, max:  worldConfig.worldRightX});
     self.pos_z = chance.floating({min: worldConfig.worldDownZ, max: worldConfig.worldUpZ});
     self.pos_y = worldConfig.height;
+    self.supplyId = self.pos_x.toString()+self.pos_y.toString()+self.pos_z.toString();
 };
 
