@@ -1,7 +1,11 @@
 namespace SailorIO.ClientInputModel;
-union ClientEventTypes { GetWorldInfo, NewPlayer, BuyNewShip, SailShip }
+union ClientEventTypes { GetWorldInfo, NewPlayer, BuyNewShip, SailShip, FeedShip }
 enum ShipTypes : byte { RAFT1 }
-
+struct Vec3 {
+  x:float;
+  y:float;
+  z:float;
+}
 table BuyNewShip {
   ship:ShipTypes;
 }
@@ -13,6 +17,10 @@ table GetWorldInfo {
 }
 table NewPlayer {
     accessToken:string;
+}
+table FeedShip {
+    supplyPos:Vec3;
+    shipId:int;
 }
 table ClientInput {
   Event:ClientEventTypes;

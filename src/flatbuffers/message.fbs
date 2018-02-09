@@ -17,6 +17,7 @@ struct Input {
 }
 table Supply {
   pos:Vec3;
+  supplyId:int;
   assetId:SupplyTypes;
   isDeath:bool;
   isNew:bool;

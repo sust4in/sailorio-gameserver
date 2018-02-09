@@ -210,6 +210,36 @@ ServerCore.prototype.messageHandler = function (ws, message) {
             //there is no raft with given type
         }
     }
+    else if ( eventType === ClientInputPacket.ClientInputModel.ClientEventTypes.FeedShip ) {
+        let shipId = userInput.Event(new ClientInputPacket.ClientInputModel.FeedShip()).shipId();
+        let supplyPosX = userInput.Event(new ClientInputPacket.ClientInputModel.FeedShip()).supplyPos().x();
+        let supplyPosY = userInput.Event(new ClientInputPacket.ClientInputModel.FeedShip()).supplyPos().y();
+        let supplyPosZ = userInput.Event(new ClientInputPacket.ClientInputModel.FeedShip()).supplyPos().z();
+        let supplyId = supplyPosX.toFixed(4)+supplyPosY+supplyPosZ.toFixed(4);
+
+        let shipEntityIdx = this.shipController.entities.findIndex(x => x.id === shipId && x.secureId === ws.secureId);
+        let supplyEntityIdx = this.supplyController.supplyItems.findIndex(x => x.supplyId === supplyId);
+        if (shipEntityIdx > -1 && supplyEntityIdx > -1)
+        {
+            let supplyVc = new THREE.Vector2(
+                this.supplyController.supplyItems[supplyEntityIdx].pos_x,
+                this.supplyController.supplyItems[supplyEntityIdx].pos_z );
+
+            let shipVc = new THREE.Vector2(
+                this.shipController.entities[shipEntityIdx].pos_x,
+                this.shipController.entities[shipEntityIdx].pos_z );
+
+            let distance = supplyVc.distanceTo( shipVc );
+            if (distance < 10) {
+                // ship.sailors.forEach(function (sailor) {
+                //     //TODO: ADD INCOME TO SAILORS
+                // })
+                this.supplyController.supplyItems[supplyEntityIdx].isDeath = true;
+            }
+        }
+        console.log("[FeedShip] EVENT TRIGGERED");
+
+    }
     else {
         //TODO: Posible client side error.
         ws.close();

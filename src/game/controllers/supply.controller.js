@@ -84,7 +84,7 @@ SupplyController.prototype.GetSupplies = function (Packet, builder) {
             if (supplyCrate.isDeath)
             {
                 Packet.Models.Supply.addIsDeath(builder, supplyCrate.isDeath);
-                self.supplyItems.remove(supplyCrate);
+                self.supplyItems.splice(i, 1);
             }
 
             let supply = Packet.Models.Supply.endSupply(builder);
