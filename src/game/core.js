@@ -31,14 +31,14 @@ function ServerCore(socket, uws) {
     this.userSlots = range(this.worldConfig.maxUser);
     this.takenSlots = [];
     this.secureIdList = [];
-    this.supplyController = new SupplyController();
-    this.playerController = new PlayerController();
-    this.shipController = new ShipController();
-    this.entityController = new EntityController();
     this.worldConfig.worldLeftX = this.worldConfig.offSetX - (this.worldConfig.width / 2);
     this.worldConfig.worldUpZ = (this.worldConfig.length / 2) - this.worldConfig.offSetZ;
     this.worldConfig.worldRightX = (this.worldConfig.width / 2) - this.worldConfig.offSetX;
     this.worldConfig.worldDownZ = this.worldConfig.offSetZ - (this.worldConfig.length / 2);
+    this.supplyController = new SupplyController();
+    this.playerController = new PlayerController();
+    this.shipController = new ShipController(this.worldConfig);
+    this.entityController = new EntityController();
 }
 
 ServerCore.prototype.broadcastState = function () {

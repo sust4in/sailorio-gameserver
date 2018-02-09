@@ -38,14 +38,29 @@ Ship.prototype.validateInput = function(dt_time) {
     return true;
 };
 
-Ship.prototype.moveForward = function () {
-    //if it has an index about given input. it return > -1 index number.
+Ship.prototype.moveForward = function (worldConfig) {
     //TODO:0.02 must be on game.yaml
     if(this.isSail)
     {
-        this.pos_z += (this.absSpeed * config.game.absolute_delta_time * this.movementSpeed / config.game.interval);
+        //collision detect
+        if(this.worldCollisionDetect(worldConfig))
+        {
+            this.pos_z -= (this.absSpeed * config.game.absolute_delta_time * this.movementSpeed / config.game.interval);
+
+        }
+        else
+        {
+            this.pos_z += (this.absSpeed * config.game.absolute_delta_time * this.movementSpeed / config.game.interval);
+        }
     }
 };
+Ship.prototype.worldCollisionDetect = function (worldConfig) {
+    return (this.pos_z >= worldConfig.worldUpZ ||
+        this.pos_z <= worldConfig.worldDownZ ||
+        this.pos_x >= worldConfig.worldRightX ||
+        this.pos_x <= worldConfig.worldLeftX)
+};
+
 
 // Ship.prototype.moveTo = function (data) {
 //     var dt_time = parseFloat(data.deltaTime);
