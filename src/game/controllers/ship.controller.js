@@ -43,7 +43,7 @@ ShipController.prototype.GetAllShips = function (Packet, builder) {
     let self = this;
     let shipList = [];
     self.entities.forEach(function (entity) {
-        entity.moveForward(this.worldConfig);
+        entity.moveForward(self.worldConfig);
         Packet.Models.Ship.startShip(builder);
         Packet.Models.Ship.addId(builder, entity.id);
         Packet.Models.Ship.addAssetType(builder, Packet.Models.ShipTypes[this.assetName]);
